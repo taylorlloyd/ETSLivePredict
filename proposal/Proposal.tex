@@ -1,0 +1,86 @@
+\documentclass{article}
+
+\bibliographystyle{plain}
+
+\begin{document}
+\title{Live Path Refinement through Probabilistic Rules}
+\author{Taylor Lloyd}
+
+\maketitle
+
+\section{Motivation}
+    GPS sensor inaccuracies are well-known in existing literature, and multiple techniques exist for refining GPS data, and interpolating between GPS readings.
+    However, existing work tends either to focus on efficiently modelling probabilities as gaussian distributions~\cite{} or deterministically map positions onto a network~\cite{}.
+    Little work, however, focuses on the properties of the objects being tracked by GPS. By constructing rules as continuous probabilities over a (position, velocity) state space, and propagating (position, velocity) forward through time, one can construct a more accurate path than by using GPS sensors alone.
+
+\section{Background}
+    The Edmonton Transit System~(ETS) makes near-realtime position information available for all active ETS busses.
+
+\section{Related Work}
+  Path Interpolation
+
+  Kalman Filters
+
+  Map-Matching
+
+\section{Proposal}
+
+Read in ETS information
+
+Propagate forward 4D snapshots in time to present
+
+Continuous probabilities can be approximated by linear-interpolation lattice
+
+Conditionally apply rules: (on roads (speed limits), on routes)
+
+\section{Evaluation}
+
+Focus on recoverability, not equality.
+
+Average Most-Likely Error Area when permuting input coordinates
+
+\section{Expectations}
+
+Visual presentation on map of Edmonton.
+
+Ability to toggle rules and assumptions (on roads, on routes, etc)
+
+\section{Detailed Timeline}
+
+    \begin{itemize}
+        \item Oct 7, 2016
+
+        Hello-world custom Clang Static Analyzer checker to print out CUDA kernel invocations
+
+        \item Oct 14, 2016
+
+        Prototype symbolic grid geometry analysis in Clang Static Analyzer with simple tests.
+
+        \item Oct 21, 2016
+
+        Prototype thread-dependent value analysis in Clang Static Analyzer with simple tests.
+
+        \item Nov 1, 2016
+
+        Prototype memory access coalescability analysis in Clang Static Analyzer with simple tests.
+
+        \item Nov 20, 2016
+
+        Camera-ready passes for Branch Divergence and Memory Access Coalescability, with results on Rodinia Benchmark Suite.
+
+        \item Dec 1, 2016
+
+        Draft paper, patches submitted to the Clang project
+
+
+        \item Future Work
+
+        Translations of Grid Geometry, Thread-dependent value, and Memory Access Coalescability for llvm IR.
+        Automatic compiler transformations to improve memory access coalescing.
+
+
+    \end{itemize}
+
+
+\bibliography{620Coalescing}
+\end{document}
