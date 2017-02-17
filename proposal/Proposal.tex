@@ -10,21 +10,28 @@
 
 \section{Motivation}
     GPS sensor inaccuracies are well-known in existing literature, and multiple techniques exist for refining GPS data, and interpolating between GPS readings.
-    However, existing work tends either to focus on efficiently modelling probabilities as gaussian distributions~\cite{} or deterministically map positions onto a network~\cite{}.
+    However, existing work tends either to focus on efficiently modelling probabilities as gaussian distributions~\cite{kobayashiITIE98} or deterministically map positions onto a network~\cite{brakatsoulasVLDB05}.
     Little work, however, focuses on the properties of the objects being tracked by GPS. By constructing rules as continuous probabilities over a (position, velocity) state space, and propagating (position, velocity) forward through time, one can construct a more accurate path than by using GPS sensors alone.
 
 \section{Background}
-    The Edmonton Transit System~(ETS) makes near-realtime position information available for all active ETS busses.
+
+    There are many competing standards for global positioning today, including GPS~(USA), D-GPS~(USA), GLONASS~(Russia), and Galileo~(EU). As these systems depend on satelite transmissions being observed on earth, the accuracy of these systems depends not only on the system used, but also on the number of satelites currently visible. With sufficient satelite coverage, none of these systems vary by more than 10 meters~\cite{liJG15}. However, as coverage changes over time, GPS signals are typically modelled with gaussian uncertainty.
+
+    The Edmonton Transit System~(ETS) makes near-realtime position information available for all active ETS busses, providing a GPS position every 30 seconds, but at up to a minute's delay.
+    Because this information is sparse and out-of-date when it arrives, interpolating between positions and projecting forward to the present can produce much more useful path information.
+
+  GPS positions inherently include measurement error, as mentioned above, but naive attempts to interpolate between positions can cause dramatically more error if done poorly. Lonergan \textit{et al.} demonstrated that point-connecting strategies such as linear or quadratic interpolation have error that scales linearly with the time between GPS positions when tracking wild animals.
 
 \section{Related Work}
-  Path Interpolation
 
-  Kalman Filters
+  Kalman Filters~\cite{kalmanJBE60} allow for the efficient combination of sensor data and historical state by modelling all inputs as gaussian uncertainties. In addition, it can accomodate for unknown or random inputs by reducing certainty as forward propagation continues. However, Kalman filters can only incorporate present sensor data, which makes them inappropriate for this use-case.
 
-  Map-Matching
+  Map-Matching~\cite{brakatsoulasVLDB05} is the process of mapping arbitrary locations onto a network. As a typical example, GPS positions are mapped onto the road network, to allow for routing and turn-by-turn directions.
+Most map-matching algorithms attempt to map current positions to networks, though some are designed to match an entire path. When an entire path must be matched to the network, greedy strategies are typically employed, occasionally with lookahead to reduce error.
 
 \section{Proposal}
 
+This research seeks to apply the theory behind Kalman Filters to non-gaussian probabilities.
 Read in ETS information
 
 Propagate forward 4D snapshots in time to present
@@ -48,19 +55,19 @@ Ability to toggle rules and assumptions (on roads, on routes, etc)
 \section{Detailed Timeline}
 
     \begin{itemize}
-        \item Oct 7, 2016
+        \item Feb 25, 2017
 
-        Hello-world custom Clang Static Analyzer checker to print out CUDA kernel invocations
+        Prototype capable of capturing and consuming bus data, and applying naive forward estim
 
-        \item Oct 14, 2016
+        \item Mar 7, 2017
 
         Prototype symbolic grid geometry analysis in Clang Static Analyzer with simple tests.
 
-        \item Oct 21, 2016
+        \item Mar 14, 2017
 
         Prototype thread-dependent value analysis in Clang Static Analyzer with simple tests.
 
-        \item Nov 1, 2016
+        \item Mar 21, 2017
 
         Prototype memory access coalescability analysis in Clang Static Analyzer with simple tests.
 
