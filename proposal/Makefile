@@ -8,7 +8,7 @@ check:
 	@echo "The following items may contain weak word usage.--------------------"
 	@./checks/weasels.sh *.tex 1>&2
 	@echo "The following items may contain passive language.-------------------"
-	@./checks/passive_voice.sh *.tex 1>&2
+	#@./checks/passive_voice.sh *.tex 1>&2
 	@echo "The following items may contain unnecessary duplication.------------"
 	@perl ./checks/dups *.tex 2>&2
 	@echo "Checking spelling.---------------------------------------------------"

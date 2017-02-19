@@ -1,7 +1,12 @@
+# Build Files
+build/
 *.class
 
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
+# Gradle files
+.gradle/
+gradle
+gradlew
+gradlew.bat
 
 # Package Files #
 *.jar

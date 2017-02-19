@@ -1,5 +1,5 @@
 \documentclass{article}
-
+\usepackage{amsmath}
 \bibliographystyle{plain}
 
 \begin{document}
@@ -11,83 +11,99 @@
 \section{Motivation}
     GPS sensor inaccuracies are well-known in existing literature, and multiple techniques exist for refining GPS data, and interpolating between GPS readings.
     However, existing work tends either to focus on efficiently modelling probabilities as gaussian distributions~\cite{kobayashiITIE98} or deterministically map positions onto a network~\cite{brakatsoulasVLDB05}.
-    Little work, however, focuses on the properties of the objects being tracked by GPS. By constructing rules as continuous probabilities over a (position, velocity) state space, and propagating (position, velocity) forward through time, one can construct a more accurate path than by using GPS sensors alone.
+    However, little work focuses on the properties of the objects being tracked by GPS. By constructing rules as continuous probabilities over a (position, velocity) state space, and propagating (position, velocity) forward through time, one can construct a more accurate path than by using GPS sensors alone.
 
 \section{Background}
 
-    There are many competing standards for global positioning today, including GPS~(USA), D-GPS~(USA), GLONASS~(Russia), and Galileo~(EU). As these systems depend on satelite transmissions being observed on earth, the accuracy of these systems depends not only on the system used, but also on the number of satelites currently visible. With sufficient satelite coverage, none of these systems vary by more than 10 meters~\cite{liJG15}. However, as coverage changes over time, GPS signals are typically modelled with gaussian uncertainty.
+    There are four competing standards for global positioning today, GPS~(USA), D-GPS~(USA), GLONASS~(Russia), and Galileo~(EU). As these systems depend on satellite transmissions being observed on earth, the accuracy of these systems depends not only on the system used, but also on the number of satellites currently visible. With sufficient satellite coverage, none of these systems vary by more than 10 meters~\cite{liJG15}. However, as coverage changes over time, GPS signals are typically modelled with gaussian uncertainty.
 
     The Edmonton Transit System~(ETS) makes near-realtime position information available for all active ETS busses, providing a GPS position every 30 seconds, but at up to a minute's delay.
     Because this information is sparse and out-of-date when it arrives, interpolating between positions and projecting forward to the present can produce much more useful path information.
 
-  GPS positions inherently include measurement error, as mentioned above, but naive attempts to interpolate between positions can cause dramatically more error if done poorly. Lonergan \textit{et al.} demonstrated that point-connecting strategies such as linear or quadratic interpolation have error that scales linearly with the time between GPS positions when tracking wild animals.
+  GPS positions inherently include measurement error, as mentioned above, but naive attempts to interpolate between positions can cause dramatically more error if done poorly. Lonergan \textit{et al.} demonstrated that point-connecting strategies such as linear or quadratic interpolation have error that scales linearly with the time between GPS positions when tracking wild animals~\cite{lonergan09}.
 
 \section{Related Work}
 
-  Kalman Filters~\cite{kalmanJBE60} allow for the efficient combination of sensor data and historical state by modelling all inputs as gaussian uncertainties. In addition, it can accomodate for unknown or random inputs by reducing certainty as forward propagation continues. However, Kalman filters can only incorporate present sensor data, which makes them inappropriate for this use-case.
+  Kalman Filters~\cite{kalmanJBE60} allow for the efficient combination of sensor data and historical state by modelling all inputs as gaussian uncertainties. In addition, it can accommodate for unknown or random inputs by reducing certainty as forward propagation continues. However, Kalman filters can only incorporate present sensor data, which makes them inappropriate for this use-case.
 
   Map-Matching~\cite{brakatsoulasVLDB05} is the process of mapping arbitrary locations onto a network. As a typical example, GPS positions are mapped onto the road network, to allow for routing and turn-by-turn directions.
 Most map-matching algorithms attempt to map current positions to networks, though some are designed to match an entire path. When an entire path must be matched to the network, greedy strategies are typically employed, occasionally with lookahead to reduce error.
 
 \section{Proposal}
 
-This research seeks to apply the theory behind Kalman Filters to non-gaussian probabilities.
-Read in ETS information
+This research seeks to apply the theory behind Kalman Filters to non-gaussian probabilities, in the context of moving objects with infrequent and inaccurate sensor updates. Specifically, this work will model a four-dimensional probability space $(p_x, p_y, v_x, v_y)$ over a series of timestamps, where $p_x$ and $p_y$ correspond to position and $v_x$ and $v_y$ correspond to velocity.
 
-Propagate forward 4D snapshots in time to present
+\subsection{Interpolation}
+To produce probabilities for subsequent timestamps, probable velocities are applied to probable positions.
+\begin{equation}
+  P(p_{x'}, p_{y'}, v_x, v_y, t') = \sum_{p_x, p_y}
+  \begin{cases}
+    P(p_x, p_y, v_x, v_y, t), & \text{if } p_x + v_x = p_{x'} \text { and } p_y + v_y = p_{y'} \\
+    0, & \text{otherwise}
+  \end{cases}
+\end{equation}
 
-Continuous probabilities can be approximated by linear-interpolation lattice
+Then, uncertainty is added to the velocity to account for unknown acceleration or deceleration.
+Finally, object-aware rules are applied to refine the estimates.
 
-Conditionally apply rules: (on roads (speed limits), on routes)
+\subsection{Object-Aware Rules}
+
+In this project, all object-aware rules must be independent of the current timestamp, and must be phrased as probabilities over the same 4D space as the objects themselves. These constraints allow the rules to be applied multiplicatively.
+
+\begin{equation}
+  P_{refined}(p_x, p_y, v_x, v_y, t) = P(p_x, p_y, v_x, v_y, t) \prod_{R \in \text{Rules}} R(p_x, p_y, v_x, v_y)
+\end{equation}
+
+Initially, the only rules explored will be the following:
+\begin{enumerate}
+    \item Busses drive along their routes, rarely making wrong turns
+    \item Busses drive the speed limit in the correct direction, along roads
+\end{enumerate}
+
+The exact probability with which these rules hold true will be a tunable parameter in the final product.
+Near-realtime bus locations are provided by Edmonton Open Data, as is route information. Information about road speed limits and directions is provided by Open Street Map.
+
+
+\subsection{State Approximation}
+In order to make the problem efficiently computable, states will be modelled as a grid, with linear interpolation between the nearest data points to provide a continuous space.
+Probabilities will be limited in fidelity to the grid in which they are held. The exact fidelity of the grid is a parameter to be explored, but will likely be held constant in the final product.
 
 \section{Evaluation}
+As this work assumes that GPS locations are themselves unreliable, there is no \textit{true} path against which to compare the output of this work. Therefore, the focus of this evaluation will be in showing that the computed path is insensitive to error in the underlying GPS signal.
 
-Focus on recoverability, not equality.
+To provide a reproducible dataset, a quantity of historical bus coordinates will be captured.
+Then the dataset will be permuted to produce a number of similar datasets by applying a gaussian error to each GPS position.
 
-Average Most-Likely Error Area when permuting input coordinates
+In order to produce a path for comparison, the $(p_x, p_y, t)$ tuple will be extracted from the most-probable state for each timestamp.
+The paths produced for each permuted dataset will then be compared to the path produced for the original dataset. Error will then be calculated using the average of Euclidean distances over time.
 
 \section{Expectations}
 
-Visual presentation on map of Edmonton.
+The outcome of this work will be a visual presentation operating on live input from the busses in Edmonton Transit, with the ability to toggle the object-aware rules to observe their effect on the predicted path.
 
-Ability to toggle rules and assumptions (on roads, on routes, etc)
+In addition, this work will produce an evaluation of the reproducibility of paths using the method presented here, and how the reproducibility is effected by the rules designed.
 
 \section{Detailed Timeline}
+  This timeline has an optimistic end date, to allow for slip-time.
 
     \begin{itemize}
         \item Feb 25, 2017
 
-        Prototype capable of capturing and consuming bus data, and applying naive forward estim
+        Prototype capable of capturing and consuming bus data, and applying naive forward estimation
 
         \item Mar 7, 2017
 
-        Prototype symbolic grid geometry analysis in Clang Static Analyzer with simple tests.
+        Prototype including route and speed limit rules
 
         \item Mar 14, 2017
 
-        Prototype thread-dependent value analysis in Clang Static Analyzer with simple tests.
+        Data capture and initial analysis of effectiveness
 
         \item Mar 21, 2017
 
-        Prototype memory access coalescability analysis in Clang Static Analyzer with simple tests.
-
-        \item Nov 20, 2016
-
-        Camera-ready passes for Branch Divergence and Memory Access Coalescability, with results on Rodinia Benchmark Suite.
-
-        \item Dec 1, 2016
-
-        Draft paper, patches submitted to the Clang project
-
-
-        \item Future Work
-
-        Translations of Grid Geometry, Thread-dependent value, and Memory Access Coalescability for llvm IR.
-        Automatic compiler transformations to improve memory access coalescing.
-
-
+        Final report and presentation ready
     \end{itemize}
 
 
-\bibliography{620Coalescing}
+\bibliography{references}
 \end{document}
