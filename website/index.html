@@ -1,0 +1,49 @@
+<head>
+<style>
+    #map {
+        height:80%;
+    }
+    html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+    }
+</style>
+</head>
+<body>
+    <div id="map"></div>
+    <script>
+      var map;
+
+      var busDict = {};
+      function initMap() {
+          map = new google.maps.Map(document.getElementById('map'), {
+              zoom: 11,
+              center: new google.maps.LatLng(53.544389,-113.490927),
+              mapTypeId: 'roadmap'
+          });
+          var socket = new WebSocket("ws://localhost:8081/events/");
+          socket.onmessage = function(event) {
+              var bus = JSON.parse(event.data);
+              // Draw a point on the map
+              var latLng = new google.maps.LatLng(bus.latitude, bus.longitude);
+              if(bus.vid in busDict) {
+                var marker = busDict[bus.vid];
+                marker.setPosition(latLng);
+              } else {
+                var marker = new google.maps.Marker({
+                  position: latLng,
+                  map: map,
+                  icon: "http://localhost:8081/AWT-Bus.png",
+                  title: bus.vid
+                });
+                busDict[bus.vid] = marker;
+              }
+              console.log(event.data);
+          }
+      }
+    </script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDpJqWrwrz9wjr7KJHrQkqM5dUZpJdAFrY&callback=initMap"></script>
+    <h1>Static Site Up</h1>
+
+</body>
