@@ -12,6 +12,10 @@ public class GPSProbability implements Probability {
         return 1.0f;
     }
 
+    public LatLng getMostLikelyPoint() {
+        return new LatLng(latitude, longitude);
+    }
+
     public float getProbability(double latitude, double longitude, double velLat, double velLong) {
         float latDiff = (float) (this.latitude - latitude);
         float lngDiff = (float) (this.longitude - longitude);

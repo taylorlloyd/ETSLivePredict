@@ -2,21 +2,17 @@ import java.util.*;
 import java.io.IOException;
 import org.eclipse.jetty.websocket.api.*;
 
-public class BusFeedSocket extends WebSocketAdapter implements BusFeed.BusUpdateListener {
+public class BusFeedSocket extends WebSocketAdapter implements BusTracker.BusChangeListener {
+    private BusTracker tracker;
     private Session session;
 
-    public void OnBussesChanged(Map<String,Bus> busses) {
-        if(session == null)
-            return;
-
-        System.out.println("Updated "+busses.size()+ " busses.");
+    @Override
+    public void onBusChanged(Bus bus, Probability p) {
         try {
-            for(Bus bus : busses.values()) {
-                String fmt = "{\"vid\": \"" + bus.vehicleId +
-                     "\", \"latitude\": " + bus.latitude +
-                      ", \"longitude\": " + bus.longitude + "}";
-                session.getRemote().sendString(fmt);
-            }
+            String fmt = "{\"vid\": \"" + bus.vehicleId +
+                 "\", \"latitude\": " + bus.latitude +
+                  ", \"longitude\": " + bus.longitude + "}";
+            session.getRemote().sendString(fmt);
         } catch (IOException e) {
             this.OnError(e);
         }
@@ -24,15 +20,16 @@ public class BusFeedSocket extends WebSocketAdapter implements BusFeed.BusUpdate
 
     public void OnError(Exception e) {
         e.printStackTrace();
-        session = null;
+        tracker.removeListener(this);
     }
 
     @Override
     public void onWebSocketConnect(Session sess)
     {
         super.onWebSocketConnect(sess);
+        this.tracker = App.app.bustracker;
         this.session = sess;
-        App.app.busfeed.setListener(this);
+        tracker.addListener(this);
         System.out.println("Socket connected");
     }
 
@@ -46,6 +43,7 @@ public class BusFeedSocket extends WebSocketAdapter implements BusFeed.BusUpdate
     public void onWebSocketClose(int statusCode, String reason)
     {
         super.onWebSocketClose(statusCode, reason);
+        tracker.removeListener(this);
         System.out.println("Socket Closed: ["+statusCode+"] " + reason);
     }
     @Override

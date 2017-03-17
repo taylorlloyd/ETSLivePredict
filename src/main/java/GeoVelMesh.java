@@ -119,6 +119,8 @@ public class GeoVelMesh extends ProbabilityMesh implements Probability {
     public float getProbability(double lat, double lng, double velLat, double velLng) {
         List<WeightedPoint> points = toGridIndices(lat, lng, velLat, velLng);
         double sum = 0;
+        if(points.size() == 0)
+            throw new RuntimeException("Unable to find points for location!");
         for(WeightedPoint p : points)
             sum += p.weight;
 
@@ -131,11 +133,18 @@ public class GeoVelMesh extends ProbabilityMesh implements Probability {
     public void setProbability(double lat, double lng, double velLat, double velLng, float val) {
         List<WeightedPoint> points = toGridIndices(lat, lng, velLat, velLng);
         double sum = 0;
+        if(points.size() == 0)
+            throw new RuntimeException("Unable to find points for location!");
         for(WeightedPoint p : points)
             sum += p.weight;
         // Accept only a percentage of the change
-        for(WeightedPoint p : points)
-            setPoint(p.idx, (float) ((val - getPoint(p.idx)) * (p.weight/sum)));
+        for(WeightedPoint p : points) {
+            float pval = (float) ((val - getPoint(p.idx)) * (p.weight/sum));
+            if(Float.isNaN(pval)) {
+                System.out.println("Error: setting value to NaN w:"+p.weight+", s:"+sum);
+            }
+            setPoint(p.idx, pval);
+        }
     }
 
 
@@ -154,7 +163,7 @@ public class GeoVelMesh extends ProbabilityMesh implements Probability {
 
     private void collectIndicesRecurse(float[] idx, int[] path, List<WeightedPoint> points) {
         if(path.length == idx.length) {
-            points.add(new WeightedPoint(distance(idx, path), path));
+            points.add(new WeightedPoint(1.0f/(1.0f + distance(idx, path)), path));
             return;
         }
 
@@ -195,6 +204,13 @@ public class GeoVelMesh extends ProbabilityMesh implements Probability {
     public float getMaxProbability() {
         int[] maxidx = mostLikelyPoint();
         return getPoint(maxidx);
+    }
+
+    public LatLng getMostLikelyPoint() {
+        int[] p = mostLikelyPoint();
+        return new LatLng(
+            denormalize(p[0], minLat, maxLat, spaceDimSize),
+            denormalize(p[1], minLong, maxLong, spaceDimSize));
     }
 
     private int[] mostLikelyPoint() {

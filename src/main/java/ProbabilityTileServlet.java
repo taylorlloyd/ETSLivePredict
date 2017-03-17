@@ -24,8 +24,9 @@ class ProbabilityTileServlet extends HttpServlet {
             // resp.setHeader("Content-Length", imageBytes.length);
 
             // TODO: get the probability object
-            Probability gps = new GPSProbability(53.50, -113.45);
-            GeoVelMesh p = GeoVelMesh.fromProbability(minLat, maxLat, minLong, maxLong, gps);
+            Probability p = tracker.getBusProbability(vid);
+            //Probability gps = new GPSProbability(53.50, -113.45);
+            //GeoVelMesh p = GeoVelMesh.fromProbability(minLat, maxLat, minLong, maxLong, gps);
 
 
             // Write the probability to the alpha layer

@@ -23,10 +23,37 @@
               mapTypeId: 'roadmap'
           });
           var socket = new WebSocket("ws://localhost:8081/events/");
+          var overlayVid = null;
+          function setProbabilityMesh(vid) {
+            overlayVid = vid;
+            var imMap = new google.maps.ImageMapType({
+              tileSize: new google.maps.Size(256,256),
+              getTileUrl: function(coord, zoom) {
+                  var scale = 1 << zoom;
+                  var tileMin = new google.maps.Point(
+                    coord.x * 256 / scale,
+                    coord.y * 256 / scale);
+                  var tileMax = new google.maps.Point(
+                    (coord.x+1) * 256 / scale,
+                    (coord.y+1) * 256 / scale);
+                  var min = map.getProjection().fromPointToLatLng(tileMin);
+                  var max = map.getProjection().fromPointToLatLng(tileMax);
+
+                  return ["//localhost:8081/tile/?vid=", vid, "&maxlat=", min.lat(), "&minlat=", max.lat(), "&minlong=", min.lng(), "&maxlong=", max.lng() ].join('');
+              }
+            });
+            map.overlayMapTypes.clear();
+            map.overlayMapTypes.insertAt(0, imMap);
+
+          }
           socket.onmessage = function(event) {
               var bus = JSON.parse(event.data);
               // Draw a point on the map
               var latLng = new google.maps.LatLng(bus.latitude, bus.longitude);
+              if(bus.vid == overlayVid) {
+                // Update the background mesh
+                setProbabilityMesh(bus.vid);
+              }
               if(bus.vid in busDict) {
                 var marker = busDict[bus.vid];
                 marker.setPosition(latLng);
@@ -36,6 +63,9 @@
                   map: map,
                   icon: "http://localhost:8081/AWT-Bus.png",
                   title: bus.vid
+                });
+                google.maps.event.addListener(marker, 'click', function() {
+                  setProbabilityMesh(bus.vid);
                 });
                 busDict[bus.vid] = marker;
               }
