@@ -9,6 +9,12 @@ public class BusTracker implements BusFeed.BusUpdateListener {
     private static final double minLong = -113.535547;
     private static final double maxLong = -113.431864;
 
+    public OSMRoadProbability osmRoads;
+
+    public BusTracker() {
+        this.osmRoads = new OSMRoadProbability();
+    }
+
     private ArrayList<BusChangeListener> listeners = new ArrayList<BusChangeListener>();
 
     public void addListener(BusChangeListener l) {
@@ -21,11 +27,11 @@ public class BusTracker implements BusFeed.BusUpdateListener {
     }
 
     // Bus probabilities, as of the last bus update
-    private Map<String,GeoVelMesh> busProbability;
-    private Map<String,Long> busTimestamp;
+    private Map<Integer,GeoVelMesh> busProbability;
+    private Map<Integer,Long> busTimestamp;
 
     public Probability getBusProbability(String vid) {
-        if(busProbability.containsKey(vid))
+        if(busProbability.containsKey(Integer.parseInt(vid)))
             return busProbability.get(vid);
         return null;
     }
@@ -34,8 +40,8 @@ public class BusTracker implements BusFeed.BusUpdateListener {
     public void OnBussesChanged(Map<String,Bus> busses) {
         if(busProbability == null && busses.size() > 0) {
             // TODO: Initialize. Track N busses
-            busProbability = new HashMap<String, GeoVelMesh>();
-            busTimestamp = new HashMap<String, Long>();
+            busProbability = new HashMap<Integer, GeoVelMesh>();
+            busTimestamp = new HashMap<Integer, Long>();
             int accepted = 0;
             for(Bus b: busses.values()) {
                 if(accepted++ >= maxBusses)
@@ -47,40 +53,48 @@ public class BusTracker implements BusFeed.BusUpdateListener {
                 GeoVelMesh mesh = GeoVelMesh.fromProbability(minLat, maxLat, minLong, maxLong, gps);
                 System.out.println("Constructed Mesh: " + mesh);
                 // Save the mesh and associated timestamp
-                busProbability.put(b.vehicleId, mesh);
-                busTimestamp.put(b.vehicleId, b.timestamp);
+                int vid = Integer.parseInt(b.vehicleId);
+                busProbability.put(vid, mesh);
+                busTimestamp.put(vid, b.timestamp);
+                System.out.println("Timestamp: " + b.timestamp);
+
+                System.out.println("Tracking bus " + b.vehicleId);
                 for(BusChangeListener l : listeners) {
                     l.onBusChanged(b, mesh);
                 }
             }
             return;
         }
+        int updated = 0;
         for (Bus b: busses.values()) {
-            if(busProbability.containsKey(b.vehicleId)) {
-                GeoVelMesh prob = busProbability.get(b.vehicleId);
+            int vid = Integer.parseInt(b.vehicleId);
+            if(busProbability.containsKey(vid)) {
+                updated++;
+                GeoVelMesh prob = busProbability.get(vid);
 
                 // Propagate the probability forward to the next input
                 // then multiply in the new GPS fix
-                long timestamp = busTimestamp.get(b.vehicleId);
+                long timestamp = busTimestamp.get(vid);
                 long diff = b.timestamp - timestamp;
-                if(diff <= 0)
-                    continue;
+                if(diff > 0) {
+                    prob = prob.propagateTime(diff)
+                               .multiply(new GPSProbability(b.latitude, b.longitude));
 
-                prob = prob.propagateTime(diff)
-                           .multiply(new GPSProbability(b.latitude, b.longitude));
-
-                busProbability.put(b.vehicleId, prob);
-                busTimestamp.put(b.vehicleId, b.timestamp);
-                System.out.println("[Bus "+b.vehicleId+"] Updated Mesh: " + prob);
-                LatLng point = prob.getMostLikelyPoint();
-                b.latitude = point.latitude;
-                b.longitude = point.longitude;
+                    busProbability.put(vid, prob);
+                    busTimestamp.put(vid, b.timestamp);
+                    System.out.println("[Bus "+b.vehicleId+"] Updated Mesh: " + prob);
+                    LatLng point = prob.getMostLikelyPoint();
+                    b.latitude = point.latitude;
+                    b.longitude = point.longitude;
+                }
+                System.out.println("Timestamp: " + b.timestamp);
                 for(BusChangeListener l : listeners) {
                     l.onBusChanged(b, prob);
                 }
             }
             // TODO: Update the bus location based on the mesh
         }
+        System.out.println("Updated " + updated + " busses (" + (busses.size() - updated) + " ignored)");
     }
     @Override
     public void OnError(Exception e) {

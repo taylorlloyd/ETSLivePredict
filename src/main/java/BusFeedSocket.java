@@ -13,6 +13,7 @@ public class BusFeedSocket extends WebSocketAdapter implements BusTracker.BusCha
                  "\", \"latitude\": " + bus.latitude +
                   ", \"longitude\": " + bus.longitude + "}";
             session.getRemote().sendString(fmt);
+            System.out.println("Sent info for bus " + bus.vehicleId);
         } catch (IOException e) {
             this.OnError(e);
         }

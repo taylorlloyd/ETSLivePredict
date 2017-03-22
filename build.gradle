@@ -28,6 +28,9 @@ repositories {
     // You can declare any Maven/Ivy/file repository here.
     mavenCentral()
     jcenter()
+    maven {
+        url 'http://sourceforge.net/projects/jsi/files/m2_repo'
+    }
 }
 
 
@@ -36,6 +39,7 @@ dependencies {
     compile 'com.google.guava:guava:20.0'
     compile 'com.google.protobuf:protobuf-java:3.0.0'
     compile 'org.eclipse.jetty.websocket:websocket-server:9.4.2.v20170220'
+    compile 'net.sourceforge.jsi:jsi:1.0.0'
 
     // Use JUnit test framework
     testCompile 'junit:junit:4.12'

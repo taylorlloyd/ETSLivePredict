@@ -19,10 +19,10 @@ public class App {
     public App() {
         app = this;
         busfeed = new BusFeed(null);
-        busfeed.startFeed();
         bustracker = new BusTracker();
         busfeed.setListener(bustracker);
         EmbeddedServer server = new EmbeddedServer(bustracker);
+        busfeed.startFeed();
         while(true) {
             try {
                 Thread.sleep(60000);

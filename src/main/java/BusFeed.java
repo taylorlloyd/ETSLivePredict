@@ -10,7 +10,18 @@ public class BusFeed extends Thread {
     private long waitTimeMs = 30*1000;
     private HashMap<String, Bus> busses = new HashMap<String, Bus>();
 
+    private boolean live = true;
+    private String replayDir = null;
+    private int replayCount = 0;
+
     public BusFeed(BusUpdateListener listener) {
+        this.listener = listener;
+    }
+
+    public BusFeed(String replayDir, BusUpdateListener listener) {
+        this.live = false;
+        this.replayDir = replayDir;
+        this.replayCount = 0;
         this.listener = listener;
     }
 
@@ -33,11 +44,23 @@ public class BusFeed extends Thread {
     public void run() {
         while(running) {
             try {
-                URL feed = new URL("https://data.edmonton.ca/download/7qed-k2fc/application%2Foctet-stream");
-                URLConnection con = feed.openConnection();
-                GtfsRealtime.FeedMessage msg = GtfsRealtime.FeedMessage.parseFrom(con.getInputStream());
+                InputStream is;
+                if(live) {
+                    URL feed = new URL("https://data.edmonton.ca/download/7qed-k2fc/application%2Foctet-stream");
+                    URLConnection con = feed.openConnection();
+                    is = con.getInputStream();
+                } else {
+                    if(replayCount == 120)
+                        replayCount = 0;
+
+                    File f = new File(replayDir+"/"+(replayCount++)+".gtfs");
+                    is = new FileInputStream(f);
+                }
+                GtfsRealtime.FeedMessage msg = GtfsRealtime.FeedMessage.parseFrom(is);
                 // TODO: Export busses into internal structure?
                 List<GtfsRealtime.FeedEntity> entities = msg.getEntityList();
+
+                long msgTime = msg.getHeader().getTimestamp();
 
                 for(GtfsRealtime.FeedEntity e : entities) {
                     if(e.hasVehicle()) {
