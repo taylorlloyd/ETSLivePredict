@@ -2,7 +2,7 @@ import java.util.*;
 
 public class BusTracker implements BusFeed.BusUpdateListener {
 
-    private static final int maxBusses = 10;
+    private int maxBusses;
 
     private static final double minLat = 53.478823;
     private static final double maxLat = 53.558637;
@@ -11,7 +11,8 @@ public class BusTracker implements BusFeed.BusUpdateListener {
 
     public OSMRoadProbability osmRoads;
 
-    public BusTracker() {
+    public BusTracker(int maxBusses) {
+        this.maxBusses = maxBusses;
         this.osmRoads = new OSMRoadProbability();
     }
 
@@ -32,7 +33,7 @@ public class BusTracker implements BusFeed.BusUpdateListener {
 
     public Probability getBusProbability(String vid) {
         if(busProbability.containsKey(Integer.parseInt(vid)))
-            return busProbability.get(vid);
+            return busProbability.get(Integer.parseInt(vid));
         return null;
     }
 
@@ -77,8 +78,9 @@ public class BusTracker implements BusFeed.BusUpdateListener {
                 long timestamp = busTimestamp.get(vid);
                 long diff = b.timestamp - timestamp;
                 if(diff > 0) {
-                    prob = prob.propagateTime(diff)
-                               .multiply(new GPSProbability(b.latitude, b.longitude));
+                    prob = prob.propagateTime(diff*1000)
+                               .multiply(new GPSProbability(b.latitude, b.longitude))
+                               .multiply(osmRoads);
 
                     busProbability.put(vid, prob);
                     busTimestamp.put(vid, b.timestamp);

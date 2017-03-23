@@ -43,7 +43,7 @@ public class OSMRoadProbability implements Probability {
 
     @Override
     public float getMaxProbability() {
-        return 1.0f;
+        return 0.5f;
     }
 
     @Override
@@ -98,13 +98,24 @@ public class OSMRoadProbability implements Probability {
         return mindist;
     }
 
+    double CNDF(double x) {
+        double k = (1d / ( 1d + 0.2316419 * x));
+        double y = (((( 1.330274429 * k - 1.821255978) * k + 1.781477937) *
+                   k - 0.356563782) * k + 0.319381530) * k;
+        y = 1.0 - 0.398942280401 * Math.exp(-0.5 * x * x) * y;
+
+        return 1d - y;
+    }
+
     @Override
     public float getProbability(double latitude, double longitude, double velLat, double velLong) {
+        float maxProb = 0.05f;
         for(OSMParser.Way path : this.index.intersects(longitude, latitude)) {
-            if(sqr_dist(latitude, longitude, path) < ROAD_WIDTH_SQ)
-                return 1.0f;
+            float prob = (float) CNDF(Math.sqrt(sqr_dist(latitude, longitude, path)/ROAD_WIDTH_SQ));
+            if(prob>maxProb)
+                maxProb = prob;
         }
-        return 0.05f;
+        return maxProb;
     }
 
     @Override

@@ -18,11 +18,12 @@ public class BusFeed extends Thread {
         this.listener = listener;
     }
 
-    public BusFeed(String replayDir, BusUpdateListener listener) {
+    public BusFeed(String replayDir, long waitTime, BusUpdateListener listener) {
         this.live = false;
         this.replayDir = replayDir;
         this.replayCount = 0;
         this.listener = listener;
+        this.waitTimeMs = waitTime;
     }
 
     public void setListener(BusUpdateListener l) {

@@ -2,7 +2,7 @@ import java.util.*;
 
 public class GeoVelMesh extends ProbabilityMesh implements Probability {
 
-    private static final double maxVel = 0.299; // degrees of latitude/second (~120 km/h)
+    private static final double maxVel = 0.00005; // degrees of latitude/second (~120 km/h)
     private static final double minVel = (-1)*maxVel; // Velocities can be in either direction
     private double minLat;
     private double maxLat;
@@ -91,6 +91,8 @@ public class GeoVelMesh extends ProbabilityMesh implements Probability {
 
     public GeoVelMesh propagateTime(long ms) {
         GeoVelMesh newMesh = new GeoVelMesh(minLat, maxLat, minLong, maxLong);
+        float max = getMaxProbability();
+        float add = (float) Math.min(1.0, ms/60000)*max;
         int[] idx = new int[4];
         for(int i=0; i<spaceDimSize; i++) {
             idx[0] = i;
@@ -105,10 +107,22 @@ public class GeoVelMesh extends ProbabilityMesh implements Probability {
                         idx[3] = l;
                         double velLong = denormalize(l, minVel, maxVel, velDimSize);
 
-                        float p = getPoint(idx);
-                        double newlat = latitude + velLat*(double)(ms/1000);
-                        double newlong = longitude + velLong*(double)(ms/1000);
-                        newMesh.setProbability(newlat, newlong, velLat, velLong, p);
+                        double oldlat = latitude - velLat*(((double)ms)/1000);
+                        double oldlong = longitude - velLong*(((double)ms)/1000);
+                        float p = getProbability(oldlat, oldlong, velLat, velLong);
+                        /*
+                        float oldp = getPoint(idx);
+                        if(p != oldp) {
+                            float[] fidx = new float[] { normalize(oldlat, minLat, maxLat, spaceDimSize),
+                                                        normalize(oldlong, minLong, maxLong, spaceDimSize),
+                                                        normalize(velLat, minVel, maxVel, velDimSize),
+                                                        normalize(velLong, minVel, maxVel, velDimSize) };
+                            System.out.println("["+idx[0]+", "+idx[1]+", "+idx[2]+", "+idx[3]+"] from ["+fidx[0]+", "+fidx[1]+", "+fidx[2]+", "+fidx[3]+"]");
+                            System.out.println("Value changing: " + oldp + " -> " + p);
+                        }
+                        */
+                        // Rezone between 0 and 1, with added uncertainty
+                        newMesh.setPoint(idx, (p+add)/(max+add));
                     }
                 }
             }

@@ -23,10 +23,10 @@ class ProbabilityTileServlet extends HttpServlet {
             resp.setHeader("Content-Type", "image/png");
             // resp.setHeader("Content-Length", imageBytes.length);
 
-            // TODO: get the probability object
-            //Probability p = tracker.getBusProbability(vid);
-            Probability p = tracker.osmRoads;
-            //Probability gps = new GPSProbability(53.50, -113.45);
+            System.out.println("Generating tile for Bus " + vid);
+            Probability p = tracker.getBusProbability(vid);
+            //Probability p = tracker.osmRoads;
+            //Probability p = new GPSProbability(53.50, -113.45);
             //GeoVelMesh p = GeoVelMesh.fromProbability(minLat, maxLat, minLong, maxLong, gps);
 
 

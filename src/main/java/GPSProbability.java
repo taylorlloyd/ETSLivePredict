@@ -20,9 +20,17 @@ public class GPSProbability implements Probability {
         float latDiff = (float) (this.latitude - latitude);
         float lngDiff = (float) (this.longitude - longitude);
 
-        float err = (latDiff*latDiff + lngDiff*lngDiff);
-        float boundary = (float)(maxDiff*maxDiff);
-        return boundary / (boundary + err);
+        float err = (float) Math.sqrt(latDiff*latDiff + lngDiff*lngDiff);
+        return (float) CNDF(err/maxDiff);
+    }
+
+    double CNDF(double x) {
+        double k = (1d / ( 1d + 0.2316419 * x));
+        double y = (((( 1.330274429 * k - 1.821255978) * k + 1.781477937) *
+                   k - 0.356563782) * k + 0.319381530) * k;
+        y = 1.0 - 0.398942280401 * Math.exp(-0.5 * x * x) * y;
+
+        return Math.max(1d - y, 0.05);
     }
 
     public void setProbability(double latitude, double longitude, double velLat, double velLong, float value) {
