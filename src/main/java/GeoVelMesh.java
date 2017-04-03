@@ -9,12 +9,13 @@ public class GeoVelMesh extends ProbabilityMesh implements Probability {
     private double minLong;
     private double maxLong;
 
-    private static final int spaceDimSize = 100;
-    private static final int velDimSize = 9;
+    private int spaceDimSize = 256;
+    private static final int velDimSize = 1;
 
-    public GeoVelMesh(double minLat, double maxLat, double minLong, double maxLong) {
+    public GeoVelMesh(int spaceDimSize, double minLat, double maxLat, double minLong, double maxLong) {
         super(new int[] {spaceDimSize, spaceDimSize, velDimSize, velDimSize});
 
+        this.spaceDimSize = spaceDimSize;
         this.minLat = minLat;
         this.maxLat = maxLat;
         this.minLong = minLong;
@@ -22,7 +23,7 @@ public class GeoVelMesh extends ProbabilityMesh implements Probability {
     }
 
     public GeoVelMesh clone() {
-        GeoVelMesh newMesh = new GeoVelMesh(minLat, maxLat, minLong, maxLong);
+        GeoVelMesh newMesh = new GeoVelMesh(spaceDimSize, minLat, maxLat, minLong, maxLong);
         int[] idx = new int[4];
         for(int i=0; i<spaceDimSize; i++) {
             idx[0] = i;
@@ -39,8 +40,8 @@ public class GeoVelMesh extends ProbabilityMesh implements Probability {
         }
         return newMesh;
     }
-    public static GeoVelMesh fromProbability(double minLat, double maxLat, double minLong, double maxLong, Probability p) {
-        GeoVelMesh mesh = new GeoVelMesh(minLat, maxLat, minLong, maxLong);
+    public static GeoVelMesh fromProbability(int spaceDimSize, double minLat, double maxLat, double minLong, double maxLong, Probability p) {
+        GeoVelMesh mesh = new GeoVelMesh(spaceDimSize, minLat, maxLat, minLong, maxLong);
         int[] idx = new int[4];
         for(int i=0; i<spaceDimSize; i++) {
             idx[0] = i;
@@ -65,7 +66,7 @@ public class GeoVelMesh extends ProbabilityMesh implements Probability {
     }
 
     public GeoVelMesh multiply(Probability p) {
-        GeoVelMesh newMesh = new GeoVelMesh(minLat, maxLat, minLong, maxLong);
+        GeoVelMesh newMesh = new GeoVelMesh(spaceDimSize, minLat, maxLat, minLong, maxLong);
         int[] idx = new int[4];
         for(int i=0; i<spaceDimSize; i++) {
             idx[0] = i;
@@ -80,7 +81,7 @@ public class GeoVelMesh extends ProbabilityMesh implements Probability {
                         idx[3] = l;
                         double velLong = denormalize(l, minVel, maxVel, velDimSize);
                         float mine = getPoint(idx);
-                        float theirs = getProbability(latitude, longitude, velLat, velLong);
+                        float theirs = p.getProbability(latitude, longitude, velLat, velLong);
                         newMesh.setPoint(idx, mine*theirs);
                     }
                 }
@@ -90,7 +91,7 @@ public class GeoVelMesh extends ProbabilityMesh implements Probability {
     }
 
     public GeoVelMesh propagateTime(long ms) {
-        GeoVelMesh newMesh = new GeoVelMesh(minLat, maxLat, minLong, maxLong);
+        GeoVelMesh newMesh = new GeoVelMesh(spaceDimSize, minLat, maxLat, minLong, maxLong);
         float max = getMaxProbability();
         float add = (float) Math.min(1.0, ms/60000)*max;
         int[] idx = new int[4];

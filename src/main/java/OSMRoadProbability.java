@@ -5,7 +5,7 @@ public class OSMRoadProbability implements Probability {
     private OSMParser osm;
     private GridIndex<OSMParser.Way> index;
 
-    private static final float ROAD_WIDTH = 0.00007f;
+    private static final float ROAD_WIDTH = 0.0011f;
     private static final float ROAD_WIDTH_SQ = ROAD_WIDTH*ROAD_WIDTH;
 
     public OSMRoadProbability() {
@@ -109,7 +109,7 @@ public class OSMRoadProbability implements Probability {
 
     @Override
     public float getProbability(double latitude, double longitude, double velLat, double velLong) {
-        float maxProb = 0.05f;
+        float maxProb = 0.01f;
         for(OSMParser.Way path : this.index.intersects(longitude, latitude)) {
             float prob = (float) CNDF(Math.sqrt(sqr_dist(latitude, longitude, path)/ROAD_WIDTH_SQ));
             if(prob>maxProb)

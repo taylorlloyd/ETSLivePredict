@@ -14,16 +14,19 @@ public class BusFeed extends Thread {
     private String replayDir = null;
     private int replayCount = 0;
 
+    private double addRand;
+
     public BusFeed(BusUpdateListener listener) {
         this.listener = listener;
     }
 
-    public BusFeed(String replayDir, long waitTime, BusUpdateListener listener) {
+    public BusFeed(String replayDir, long waitTime, double addRand, BusUpdateListener listener) {
         this.live = false;
         this.replayDir = replayDir;
         this.replayCount = 0;
         this.listener = listener;
         this.waitTimeMs = waitTime;
+        this.addRand = addRand;
     }
 
     public void setListener(BusUpdateListener l) {
@@ -51,8 +54,11 @@ public class BusFeed extends Thread {
                     URLConnection con = feed.openConnection();
                     is = con.getInputStream();
                 } else {
-                    if(replayCount == 120)
-                        replayCount = 0;
+                    if(replayCount == 120) {
+                        stopFeed();
+                        break;
+                    }
+
 
                     File f = new File(replayDir+"/"+(replayCount++)+".gtfs");
                     is = new FileInputStream(f);
@@ -82,6 +88,14 @@ public class BusFeed extends Thread {
                         bus.timestamp = vp.getTimestamp();
                         bus.latitude = vp.getPosition().getLatitude();
                         bus.longitude = vp.getPosition().getLongitude();
+                        if(!live) {
+                            Random r = new Random();
+                            // + or - maxRand
+                            bus.latitude += 2*r.nextDouble()*addRand - addRand;
+                            bus.longitude += 2*r.nextDouble()*addRand - addRand;
+                        }
+                        bus.raw_latitude = bus.latitude;
+                        bus.raw_longitude = bus.longitude;
                         bus.bearing = vp.getPosition().getBearing();
                         bus.speed = vp.getPosition().getSpeed();
 

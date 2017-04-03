@@ -3,7 +3,7 @@ public class BusCsvWriter implements BusTracker.BusChangeListener {
     String dir;
 
     public BusCsvWriter(String dir) {
-        this.dir = dir;
+        this.dir = dir.trim();
     }
 
     private File fileForBus(String vid) throws IOException {
@@ -18,7 +18,7 @@ public class BusCsvWriter implements BusTracker.BusChangeListener {
         try {
             FileWriter fw = new FileWriter(fileForBus(bus.vehicleId), true);
             LatLng ll = p.getMostLikelyPoint();
-            fw.write(bus.timestamp + ", " + ll.latitude + ", " + ll.longitude + "\n");
+            fw.write(bus.timestamp + ", "+ ll.latitude + ", " + ll.longitude + ", " + bus.raw_latitude + ", " + bus.raw_longitude + "\n");
             fw.flush();
             fw.close();
         } catch (IOException e) {

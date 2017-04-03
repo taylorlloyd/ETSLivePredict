@@ -9,7 +9,7 @@ public class GPSProbability implements Probability {
     }
 
     public float getMaxProbability() {
-        return 1.0f;
+        return 0.5f;
     }
 
     public LatLng getMostLikelyPoint() {
@@ -21,7 +21,8 @@ public class GPSProbability implements Probability {
         float lngDiff = (float) (this.longitude - longitude);
 
         float err = (float) Math.sqrt(latDiff*latDiff + lngDiff*lngDiff);
-        return (float) CNDF(err/maxDiff);
+        float ret = (float) CNDF(err/maxDiff);
+        return ret;
     }
 
     double CNDF(double x) {

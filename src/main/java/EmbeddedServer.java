@@ -20,6 +20,8 @@ public class EmbeddedServer {
 
         ProbabilityTileServlet tileServlet = new ProbabilityTileServlet(tracker);
         ServletHolder holderTile = new ServletHolder("tiles", tileServlet);
+        holderTile.setInitParameter("useFileMappedBuffer", "false");
+        holderTile.setInitParameter("cacheControl", "max-age=0, public");
         ctx.addServlet(holderTile, "/tile/*");
 
         server.setHandler(ctx);

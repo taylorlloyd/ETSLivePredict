@@ -18,8 +18,8 @@ public class App {
 
     public App() {
         app = this;
-        busfeed = new BusFeed("data_capture/Mar22", 5000, null);
-        bustracker = new BusTracker(50);
+        busfeed = new BusFeed("data_capture/Mar22", 5000, 0.0, null);
+        bustracker = new BusTracker(5, 512);
         busfeed.setListener(bustracker);
         EmbeddedServer server = new EmbeddedServer(bustracker);
         busfeed.startFeed();

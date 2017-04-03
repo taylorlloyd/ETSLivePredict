@@ -3,16 +3,18 @@ import java.util.*;
 public class BusTracker implements BusFeed.BusUpdateListener {
 
     private int maxBusses;
+    private int gridDim;
 
-    private static final double minLat = 53.478823;
-    private static final double maxLat = 53.558637;
-    private static final double minLong = -113.535547;
-    private static final double maxLong = -113.431864;
+    private static final double minLat = 53.435;
+    private static final double maxLat = 53.638;
+    private static final double minLong = -113.674;
+    private static final double maxLong = -113.338;
 
     public OSMRoadProbability osmRoads;
 
-    public BusTracker(int maxBusses) {
+    public BusTracker(int maxBusses, int gridDim) {
         this.maxBusses = maxBusses;
+        this.gridDim = gridDim;
         this.osmRoads = new OSMRoadProbability();
     }
 
@@ -51,7 +53,7 @@ public class BusTracker implements BusFeed.BusUpdateListener {
                 // Construct a mesh from the GPS fix
                 GPSProbability gps = new GPSProbability(b.latitude, b.longitude);
                 System.out.println("Constructed GPS probability: " + gps);
-                GeoVelMesh mesh = GeoVelMesh.fromProbability(minLat, maxLat, minLong, maxLong, gps);
+                GeoVelMesh mesh = GeoVelMesh.fromProbability(gridDim, minLat, maxLat, minLong, maxLong, gps).multiply(osmRoads);
                 System.out.println("Constructed Mesh: " + mesh);
                 // Save the mesh and associated timestamp
                 int vid = Integer.parseInt(b.vehicleId);
@@ -60,6 +62,9 @@ public class BusTracker implements BusFeed.BusUpdateListener {
                 System.out.println("Timestamp: " + b.timestamp);
 
                 System.out.println("Tracking bus " + b.vehicleId);
+                LatLng loc = mesh.getMostLikelyPoint();
+                b.latitude = loc.latitude;
+                b.longitude = loc.longitude;
                 for(BusChangeListener l : listeners) {
                     l.onBusChanged(b, mesh);
                 }
@@ -78,8 +83,10 @@ public class BusTracker implements BusFeed.BusUpdateListener {
                 long timestamp = busTimestamp.get(vid);
                 long diff = b.timestamp - timestamp;
                 if(diff > 0) {
-                    prob = prob.propagateTime(diff*1000)
-                               .multiply(new GPSProbability(b.latitude, b.longitude))
+                    //prob = prob.propagateTime(diff*1000)
+                    //    .multiply(new GPSProbability(b.latitude, b.longitude))
+                    prob = GeoVelMesh.fromProbability(gridDim, minLat, maxLat,  minLong, maxLong,
+                               new GPSProbability(b.latitude, b.longitude))
                                .multiply(osmRoads);
 
                     busProbability.put(vid, prob);

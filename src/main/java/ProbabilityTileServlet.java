@@ -24,10 +24,14 @@ class ProbabilityTileServlet extends HttpServlet {
             // resp.setHeader("Content-Length", imageBytes.length);
 
             System.out.println("Generating tile for Bus " + vid);
-            Probability p = tracker.getBusProbability(vid);
-            //Probability p = tracker.osmRoads;
-            //Probability p = new GPSProbability(53.50, -113.45);
-            //GeoVelMesh p = GeoVelMesh.fromProbability(minLat, maxLat, minLong, maxLong, gps);
+            //Probability p = tracker.getBusProbability(vid);
+            Probability osm = tracker.osmRoads;
+            Probability gps = new GPSProbability(53.50, -113.45);
+        double gminLat = 53.435;
+        double gmaxLat = 53.638;
+        double gminLong = -113.674;
+        double gmaxLong = -113.338;
+            GeoVelMesh p = GeoVelMesh.fromProbability(512,gminLat, gmaxLat, gminLong, gmaxLong, osm).multiply(gps);
 
 
             // Write the probability to the alpha layer

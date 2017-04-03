@@ -9,9 +9,6 @@ public class ProbabilityMesh {
         }
         this.mesh = new float[elemSize];
         this.dims = dims;
-        float initVal = (float) (1.0f / elemSize);
-        for(int i=0; i<elemSize; ++i)
-            this.mesh[i] = initVal;
     }
 
     float getPoint(int[] indices) {
