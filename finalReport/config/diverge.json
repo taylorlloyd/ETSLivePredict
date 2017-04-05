@@ -1,0 +1,5 @@
+{
+  "exec": ["bash", "-c", "./scripts/diverge.sh"],
+  "caption": "Static Branch Divergence detector performance",
+  "label": "fig:tbl:diverge"
+}

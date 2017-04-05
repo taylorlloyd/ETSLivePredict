@@ -1,0 +1,44 @@
+\documentclass[10pt,numbers]{boilerplate/sigplanconf}
+
+\input{boilerplate/packages}
+\input{boilerplate/macros}
+
+\newcommand{\REM}[1]{}
+\newif\ifComments
+\Commentstrue
+\ifComments
+\newcommand{\chek}[1]{\noindent\textcolor{red}{Check: {#1}}}
+\newcommand{\taylor}[1]{\noindent\textcolor{violet}{Taylor: {#1}}}
+\newcommand{\rethink}[1]{\noindent\textcolor{red}{ {#1}}}
+\else
+\newcommand{\chek}[1]{}
+\newcommand{\taylor}[1]{}
+\newcommand{\artem}[1]{}
+\newcommand{\erick}[1]{}
+\newcommand{\karim}[1]{}
+\newcommand{\nelson}[1]{}
+\newcommand{\rethink}[1]{}
+\fi
+
+\begin{document}
+
+\input{boilerplate/copyright}
+
+\title{OpenCL Optimizations for FPGAs}
+
+\input{boilerplate/authors}
+
+\maketitle
+
+% Sections
+\input{sections/intro}
+\input{sections/background}
+\input{sections/related}
+\input{sections/work}
+\input{sections/eval}
+\input{sections/conclusion}
+\input{sections/future}
+
+\bibliographystyle{abbrvnat}
+\bibliography{references}
+\end{document}

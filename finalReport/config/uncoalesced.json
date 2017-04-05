@@ -1,0 +1,5 @@
+{
+  "exec": ["bash", "-c", "./scripts/uncoalesced.sh"],
+  "caption": "Static Noncoalescable Memory Access detector performance",
+  "label": "fig:tbl:uncoalesced"
+}

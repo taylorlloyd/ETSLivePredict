@@ -1,0 +1,51 @@
+\taylor{Resummarize work as agenda}
+
+\section{Probability Grid}
+
+\taylor{Detail problem of discretizing continuous probs}
+\taylor{cite original 2d grid work}
+\taylor{discuss extension to 4d to include velocity}
+
+\taylor{Discuss 2-way mapping from grid to real-world}
+\taylor{Discuss implementation of linear interpolation}
+\taylor{Discuss benefits/drawbacks of linear interpolation=>max/min at point}
+
+\section{Probabilistic Rules}
+
+\taylor{Discuss ability to represent knowledge of objects being tracked}
+\taylor{Contrast to Kalman Filters, which can only represent Gaussians}
+\taylor{Provide examples: Vehicles drive on roads, in the correct direction, people near their home not moving are in their homes}
+\taylor{Emphasize probability to allow rules that are sometimes wrong}
+
+\subsection{Road Matching}
+
+\taylor{Discuss and cite data source (OSM)}
+
+\taylor{Give function over minimum road distance}
+
+\taylor{Efficiently calculating minimum road distance}
+\taylor{discuss roads: sequence of segments}
+\taylor{discuss index implementation - each road in each grid cell it crosses}
+\taylor{discuss index query - need query point + neighbors (nearest q, not overlap q)}
+
+\section{Grid-Based Trajectory Refinement}
+
+\taylor{summarize how grids + rules can combine information}
+
+\subsection{Forward Estimation}
+
+\taylor{Describe example point in grid with velocity moving forward}
+\taylor{provide math for pointwise update}
+
+\subsection{GPS Sensor Integration}
+
+\taylor{Describe sensor input, gaussian centered around point}
+\taylor{Cite error distribution again}
+\taylor{provide math for pointwise integration}
+\taylor{Call out mult as pointwise AND}
+
+\subsection{Rule Integration}
+
+\taylor{Call back to sensor integration}
+\taylor{Note equation compatibility with any probability rule}
+\taylor{Summarize use of OSM Road Matching}

@@ -1,0 +1,58 @@
+% Tables
+\newcommand{\specialcell}[2][c]{%
+  \begin{tabular}[#1]{@{}c@{}}#2\end{tabular}}
+
+% Definitions
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}%[section]
+
+% Paper dimensions
+\special{papersize=8.5in,11in}
+\setlength{\pdfpageheight}{\paperheight}
+\setlength{\pdfpagewidth}{\paperwidth}
+
+% Tool names
+\newcommand{\gpucheck}{GPUCheck\xspace}
+
+% TODOs
+\definecolor{darkred}{rgb}{0.75,0,0}
+\newcommand{\todo}[1]{\textcolor{darkred}{\textbf{$\blacktriangleright$#1$\blacktriangleleft$}}}
+
+% In-text referencs
+\newcommand{\figref}[1]{Figure~\ref{#1}\xspace}
+\newcommand{\tabref}[1]{Table~\ref{#1}\xspace}
+
+% Code
+\newcommand{\code}[1]{\texttt{#1}\xspace}
+\definecolor{sh_comment}{rgb}{0.12, 0.38, 0.18}
+\definecolor{sh_keyword}{rgb}{0.37, 0.08, 0.25}
+\definecolor{sh_string}{rgb}{0.06, 0.10, 0.98}
+\definecolor{CommentColor}{rgb}{0.15,0.5,0.15}
+\lstset{
+  showspaces = false,
+  showtabs = false,
+  tabsize = 2,
+  columns = flexible,
+  language = C++,
+  basicstyle = \ttfamily\small,
+  stringstyle = \color{sh_string},
+  keywordstyle = \color{sh_keyword}\bfseries,
+  commentstyle = \color{sh_comment}\itshape,
+  numberstyle = \scriptsize\color{CommentColor},
+  lineskip = 0pt,
+  escapeinside = {/*@}{@*/},
+  numbersep = 5pt,
+  captionpos = b,
+  xleftmargin = 0.4cm,
+  xrightmargin = 0.5cm,
+  numbers = left,
+  firstnumber = last,
+  showstringspaces = false
+  stepnumber = 1,
+  numbersep = 5pt,
+  backgroundcolor = \color{white},
+  captionpos = b,
+  breaklines = true,
+  breakatwhitespace = false,
+}
+\SetKwProg{Fn}{Function}{}{}
