@@ -1,6 +1,14 @@
-\taylor{Resummarize work as agenda}
+This work makes use of probability meshes to approximate a 4-dimensional (position,velocity) space. The meshes are then used to implement efficient forward estimation, integration of new sensor data, and integration of probabilistic rules. Finally, a pipeline is constructed from these elements to produce refined paths from raw positional input.
 
-\section{Probability Grid}
+\section{Probability Meshes}
+
+Each trajectory of interest $t$ has an associated 4-dimensional $n*m*i*j$ probability mesh $M_t$, with each cell $M_t(n,m,i,j)$ in the mesh representing the likelihood that the most recent position and velocity in the trajectory lie in that cell.
+However $n$, $m$, $i$, and $j$ are integer values while locations and velocities are continuous.
+In order to account for continuous values, an interpolation scheme can approximate points between cell centers.
+
+Interpolation works as follows: For each dimension index $i$ in a query $M_t(i_n, i_m, i_i, i_j)$, calculate $\mathit{floor}(i)$ and $\mathit{ceil}(i)$. Then collect the set of points $P$ for all combinations of $floor$ and $ceil$ in each dimension.
+
+For each point $p \in P$,
 
 \taylor{Detail problem of discretizing continuous probs}
 \taylor{cite original 2d grid work}
