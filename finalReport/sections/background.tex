@@ -1,10 +1,13 @@
 \section{Background}
 
 \subsection{GPS Positioning}
+\input{figures/fig-gps-how}
 
-\taylor{Discuss how GPS functions}
+GPS Positioning technology makes use of satelites in known orbits around the earth, broadcasting the current time. By consulting the orbits and the time taken for a signal to arrive from a number of satelites, GPS recievers can determine their own location on Earth, as shown in \figref{fig:gps:how}.
 
-\taylor{Discuss GPS failure modes, use gps.gov}
+\input{figures/fig-reflect}
+
+However, GPS cannot produce perfectly precise locations. Error is introduced by a variety of factors: Orbital information can be out-of-date or subtly incorrect, or too few satelites may be within reach. \figref{fig:gps:reflect} shows a more dramatic problem, in which the signal recieved is bounced off a nearby object before being received.
 
 \subsection{Trajectory Refinement}
 
