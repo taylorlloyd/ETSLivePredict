@@ -16,16 +16,11 @@ Shown in \figref{fig:size:err}, substantial error is contributed by the 64x64 an
 
 \input{figures/fig-size-time}
 
-\taylor{Faster better, but hard constraint: must keep up with world}
-\taylor{describe Grid fidelity importance}
-\taylor{Describe recoverability}
-\taylor{describe sources of error}
-
-\taylor{generate and reference graph}
-\taylor{describe error metric: difference at each timestamp}
-\taylor{Show 256*256 as apparent sweet spot}
+Execution times remain approximately constant per-cell, meaning doubling the spatial fidelity in two dimensions roughly quadruples the processing time required. From the combination of the above, 256*256*9*9 was selected as the optimal probability mesh size.
 
 \subsection{Route Recoverability}
+
+The underlying premise of this work is that GPS signals are unreliable
 \taylor{Describe assumed GPS unreliability}
 \taylor{random permutations to location, scaling distance}
 \taylor{compare distance between original/permuted locations vs original/permuted grid locations}
