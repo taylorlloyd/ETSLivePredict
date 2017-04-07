@@ -1,0 +1,16 @@
+\begin{figure}
+\begin{tikzpicture}
+    \begin{axis}[
+        xlabel={Grid Size},
+        xticklabels={0,0, 64x64,128x128,256x256,512x512,1024x1024},
+        xmin=0.5,
+        xmax=5.5,
+        x tick label style={rotate=90,anchor=east},
+        ylabel={Average Pointwise Distance (Meters)},
+    ]
+    \addplot table {data/size-err.tsv};
+    \end{axis}
+\end{tikzpicture}
+\caption{Refined Position vs Raw Position by Grid Size}
+\label{fig:size:err}
+\end{figure}

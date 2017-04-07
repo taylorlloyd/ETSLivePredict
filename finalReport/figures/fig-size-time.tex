@@ -1,0 +1,16 @@
+\begin{figure}
+\begin{tikzpicture}
+    \begin{axis}[
+        xlabel={Grid Size},
+        xticklabels={0,0, 64x64,128x128,256x256,512x512, 1024x1024},
+        xmin=0.5,
+        xmax=5.5,
+        x tick label style={rotate=90,anchor=east},
+        ylabel={Execution Time (Seconds)},
+    ]
+    \addplot table {data/size-time.tsv};
+    \end{axis}
+\end{tikzpicture}
+\caption{Execution Time by Grid Size}
+\label{fig:size:time}
+\end{figure}

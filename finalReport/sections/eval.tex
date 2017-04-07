@@ -1,9 +1,21 @@
 \section{Evaluation}
 
-\taylor{Describe input data}
-\taylor{Describe experimental setup}
+In order to evaluate this technique, 1 hour of location data was captured for 4 busses in the Edmonton Public Transit System. This data consists of 120 sensor updates per bus, or 1 every 30 seconds. All results were captured on a machine with 32 GB of RAM, and a Core i5 2700K processor.
 
-\subsection{Processing Time}
+Unless otherwise specified, all probability meshes are 256*256*9*9, and are mapped to the Edmonton City Limits, with velocities in the range (-100km/h,100km/h).
+
+\subsection{Optimal Grid Size}
+Using a finer spatial grid ($n$ and $m$) allows for smaller changes in position to be represented, and for finer points to be selected as most-likely positions.
+However, in order to be useful for real-time refinement, it must be possible to update meshes at least as quickly as new sensor updates come in. This means it must be possible to update all meshes in under 1 hour.
+
+By calculating recoverability between the raw GPS positions and the refined positions for a series of grid sizes, we can determine at what grid size the fidelity no longer contributes a substantial error. Because in this case refinement itself will appear to contribute error, we are looking not for a low absolute error, but a "levelling off" in which increasing size does not further reduce error.
+
+\input{figures/fig-size-err}
+
+Shown in \figref{fig:size:err}, substantial error is contributed by the 64x64 and 128x128 grids, but beyond that there appears to be negligible gain from further size increases. It may still be desirable to use larger grids, as the error continues to reduce, but execution time may prevent it. \figref{fig:size:time} shows the time required to compute all 120 sensor updates for all 4 busses. While sizes up to 256x256 are relatively efficient to compute, it takes nearly the full hour to process the 1024x1024 grid.
+
+\input{figures/fig-size-time}
+
 \taylor{Faster better, but hard constraint: must keep up with world}
 \taylor{describe Grid fidelity importance}
 \taylor{Describe recoverability}
