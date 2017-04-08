@@ -14,6 +14,7 @@ Error is presented here as the mean distance between points at the same timestam
 \input{figures/fig-size-err}
 
 Shown in \figref{fig:size:err}, substantial error is contributed by the 64x64 and 128x128 grids, but beyond that there appears to be negligible gain from further size increases. It may still be desirable to use larger grids, as the error continues to reduce, but execution time may prevent it. \figref{fig:size:time} shows the time required to compute all 120 sensor updates for all 4 busses. While sizes up to 256x256 are relatively efficient to compute, it takes nearly the full hour to process the 1024x1024 grid.
+Execution times remain approximately constant per-cell, meaning doubling the spatial fidelity in two dimensions roughly quadruples the processing time required. From the combination of the above, 256*256*9*9 was selected as the optimal probability mesh size.
 
 \input{figures/fig-size-time}
 
