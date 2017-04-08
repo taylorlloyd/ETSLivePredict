@@ -1,7 +1,15 @@
 \section{Related Work}
 
-\subsection{Kalman Filters}
+Related work tends to fall into distinct categories. Kalman filters allow for sensor integration with historical data, but rely on all inputs to be expressible as gaussian probabilities, or as absolute certainties.
+2-dimensional probability grids have been used in robotics to assist with self-location, but existing techniques use the existing model as history only, rather than as a tool to enable the use of additional rules.
+Finally, map-matching techniques attempt to attach all sensor positions to a known network, typically to enable routing applications.
 
-\subsection{Map Matching}
+\subsection{Kalman Filters}
+  Kalman Filters~\cite{kalmanJBE60} allow for the efficient combination of sensor data and historical state by modelling all inputs as gaussian uncertainties. In addition, it can accommodate for unknown or random inputs by reducing certainty as forward propagation continues. However, because many rules cannot be expressed with gaussian uncertainty, Kalman filters are unable to be used for our proposed application.
 
 \subsection{Probability Grids}
+  Probability grids~\cite{burgardNCAI96} have been used in robotics to enable memory of environments, both for position estimation and for environment recognition. However, such grids are historically used to learn an environment, and tend to track probabilities other than the current location. This work uses probability meshes to track the object's current position in real-time.
+
+\subsection{Map Matching}
+  Map-Matching~\cite{brakatsoulasVLDB05} is the process of mapping arbitrary locations onto a network. As a typical example, GPS positions are mapped onto the road network, to allow for routing and turn-by-turn directions.
+Most map-matching algorithms attempt to map current positions to networks, though some are designed to match an entire path. When an entire path must be matched to the network, greedy strategies are typically employed, occasionally with lookahead to reduce error.

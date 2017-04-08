@@ -1,1 +1,10 @@
 \section{Future Work}
+
+While this work has so far been unsuccessful, there are a variety of promising avenues to explore. First, the major limiting factor has been the uniform grid overlaid on the city. Adaptive grids, either remaining uniform but moving with the current best estimate, or with differing fidelity depending on the current estimate, would allow for dramatically faster computation with improved resolution.
+
+Alternatively, larger meshes could be made feasible through the integration of GPU computing. Updating large meshes in parallel is a key GPU feature, and could increase the resolution of real-time meshes by orders of magnitude.
+
+If resolution can be improved to the point where this technology can outperform raw sensor input, there is a vast array of rules that can be implemented and evaluated. In the context of public transit, busses typically stay on their routes, which are publicly available. Speed limitations for roads could be applied, and one-way roads could be encoded based on velocities.
+By integrating additional rules, more sensor error can be eliminated.
+
+Finally, while applying rules provides more semantically likely routes, it also accurately identifies discrepant behaviour. In all the work here, only the most-likely point is considered. However, the relative likelihood of that point encodes valuable information about the behaviour of the object. A low likelihood identifies an object that is diverging from expected behaviour, which could be useful in additional applications.

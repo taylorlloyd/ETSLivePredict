@@ -1,0 +1,19 @@
+\begin{figure}
+\begin{tikzpicture}
+    \begin{axis}[
+        xlabel=Maximum GPS Error,
+        ylabel=Average Pointwise Distance (meters),
+        xticklabels from table={data/gpsErr.tsv}{GPSErr},
+        xtick=data,
+        ybar,
+        bar width=4pt,
+        legend pos=north west,
+    ]
+        \addplot[fill=blue] table[x expr=\coordindex,y=RawErr] {data/gpsErr.tsv};
+        \addplot[fill=red] table[x expr=\coordindex,y=RefErr] {data/gpsErr.tsv};
+        \legend{Raw Sensor Positions, Refined Path Positions}
+    \end{axis}
+\end{tikzpicture}
+\caption{Refined Error vs Raw Error by GPS Error Radius}
+\label{fig:gps:err}
+\end{figure}

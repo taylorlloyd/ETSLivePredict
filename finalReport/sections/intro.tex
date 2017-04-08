@@ -1,10 +1,10 @@
 \section{Introduction}
 \input{figures/fig-frontage}
-Many systems today keep track of objects in real-time through positioning technologies such as the satelite Global Positioning System~(GPS).
+Many systems today keep track of objects in real-time through positioning technologies such as the satelite Global Positioning System~(GPS)\cite{gpsGov}.
 However, positioning technologies have inherent error, which can range from centimeters to tens of meters.
 Consider the issue of tracking the number of vehicles exiting a highway to an adjacent, parallel frontage road (\figref{fig:frontage}). All vehicles are still going in the same direction, at similar speeds. The difference in relative position could easily be within the error of GPS under poor conditions.
 
-This problem can be handled in a number of different ways. If additional sensors can be used, then disparate information can be combined to produce more accurate results, known as \textit{sensor fusion}.
+This problem can be handled in a number of different ways. If additional sensors can be used, then disparate information can be combined to produce more accurate results, known as \textit{sensor fusion}~\cite{moravecAIM88}.
 Alternatively, historical sensor information can be used to refine new sensor inputs.
 Finally, rules can be introduced to help clean up random information. Returning to our example, if the vehicle velocity drops below highway speeds over a period of time, it could be assumed to have left the faster roadway.
 

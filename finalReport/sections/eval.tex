@@ -9,6 +9,7 @@ Using a finer spatial grid ($n$ and $m$) allows for smaller changes in position 
 However, in order to be useful for real-time refinement, it must be possible to update meshes at least as quickly as new sensor updates come in. This means it must be possible to update all meshes in under 1 hour.
 
 By calculating recoverability between the raw GPS positions and the refined positions for a series of grid sizes, we can determine at what grid size the fidelity no longer contributes a substantial error. Because in this case refinement itself will appear to contribute error, we are looking not for a low absolute error, but a "levelling off" in which increasing size does not further reduce error.
+Error is presented here as the mean distance between points at the same timestamp, in meters.
 
 \input{figures/fig-size-err}
 
@@ -16,23 +17,20 @@ Shown in \figref{fig:size:err}, substantial error is contributed by the 64x64 an
 
 \input{figures/fig-size-time}
 
-\taylor{Faster better, but hard constraint: must keep up with world}
-\taylor{describe Grid fidelity importance}
-\taylor{Describe recoverability}
-\taylor{describe sources of error}
-
-\taylor{generate and reference graph}
-\taylor{describe error metric: difference at each timestamp}
-\taylor{Show 256*256 as apparent sweet spot}
-
 \subsection{Route Recoverability}
-\taylor{Describe assumed GPS unreliability}
-\taylor{random permutations to location, scaling distance}
-\taylor{compare distance between original/permuted locations vs original/permuted grid locations}
 
-\taylor{generate and reference graph}
-\taylor{discuss reasons for failure: error magnification}
-\taylor{discuss reasons for failure: falling off grid}
+Because GPS sensors are assumed in this work to be unreliable, and the resulting techniques operate on that assumption, it makes little sense to compare the refined paths to the original sensor data. Instead, we perform multiple runs, randomly permuting GPS positions within specified radii. By comparing the error from raw sensor input to the error in the refined path, we can evaluate the effectiveness of these techniques in accomodating for errors. \figref{fig:gps:err} shows the resulting information.
+
+\input{figures/fig-gps-err}
+
+Clearly visible in the figure, path refinement fails at all error levels to produce a more recoverable path than just using the original sensor readings. However, as GPS error increases, the gap begins to close in relative terms. At 10cm of GPS error, the refined error is 8.4x greater, while at 2m of GPS error, the refined error is only 3x greater. At further inspection, this error occurs for two main reasons:
+\begin{enumerate}
+    \item \textbf{Error Magnification:} The probability meshes can express maximum likelihood points only at exact grid cells. Thus, a small change in raw position can cause the refined path to move the position an entire cell. Since cells correspond to positions multiple meters apart, this magnifies small changes into large changes. Though most cells are unchanged, a few errors skew the result.
+
+    \item \textbf{Off-the-grid Error:} One bus being tracked actually leaves the City of Edmonton geographic limits for a portion of its route. During this portion, the probability mesh is forced to approximate its location as at the nearest edge.
+\end{enumerate}
+
+These issues, along with the reducing gap in recoverability as the error grows more dramatic, seem to indicate that a more precise probability mesh would solve much of the issue in refined recoverability.
 
 %\input{figures/fig-algm-ex}
 %\input{figures/fig-code-ex}
